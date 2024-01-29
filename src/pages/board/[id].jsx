@@ -1,15 +1,41 @@
 import { useRouter } from "next/router";
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardMedia, Chip, Grid, Typography, Button } from '@mui/material';
-import { Box } from '@mui/system';
 import MainLayout from "../layout/mainLayout";
 import posts from "../post/posts";
+import { postsService } from "../../services/postService";
 
 
 function Board() {
 
     const router = useRouter();
     const { id } = router.query;
-    const post = posts.find((p) => p.id === parseInt(id, 10));
+    const [post, setPost] = useState({ postId: '', title: '', content: '', image:'' });
+
+    useEffect(() => {
+      const fetchPost = async () => {
+        try {
+          const response = await postsService.getPost(id);
+          setPost(response.data);
+
+          const viewedPosts = sessionStorage.getItem('viewedPosts') ? JSON.parse(sessionStorage.getItem('viewedPosts')) : [];
+
+          if (!viewedPosts.includes(response.data.postId)) {
+            // 조회 기록이 없으면 조회수 업데이트 및 localStorage에 기록
+            await postsService.updateViewCountPost(response.data.postId);
+            sessionStorage.setItem('viewedPosts', JSON.stringify([...viewedPosts, response.data.postId]));
+          }
+
+        } catch (err) {
+          console.log('게시글을 불러오는 데 실패했습니다.');
+          console.error(err);
+        }
+      };
+
+      if(router.isReady){
+        fetchPost();
+      }
+    }, [id, router.isReady]);
 
     // URL에서 posts 배열이 undefined인 경우 처리
     if (!id || !posts) {
@@ -21,8 +47,25 @@ function Board() {
     };
 
     const handlePostUpdateClick = () => {
-      router.push(`./eidt/${post.id}`);
+      router.push(`./edit/${post.postId}`);
     };
+
+    const handlePostDeleteClick = async () => {
+      try {
+
+        const confirmDelete = window.confirm("삭제하시겠습니까?");
+
+        if (confirmDelete) {
+          await postsService.deletePost(post.postId);
+
+          router.push('/..'); 
+        }
+      } catch (err) {
+        console.error("게시글 삭제 실패:", err);
+        alert("게시글 삭제에 실패했습니다.");
+      }
+    };
+
 
   return (
     <div>
@@ -43,22 +86,20 @@ function Board() {
                 sx={{ objectFit: 'cover' }} // 이미지가 카드 크기에 맞게 채워지도록 조정합니다.
               />
 
-              <Typography fontSize="20px">Post ID : {post.id}</Typography>
+              <Typography fontSize="20px">Post ID : {post.postId}</Typography>
 
-              <Box p={1} display="flex" justifyContent="flex-start" flexWrap="wrap">
-                {post.categories.map(category => (
-                  <Chip label={category} key={category} sx={{ m: 0.5 }} />
-                ))}
-              </Box>
-              
               <CardContent>
                 <Button variant="contained" onClick={() => handleMainPageClick()}
                   sx={{ backgroundColor: '#4374D9', color: 'white', marginRight: '8px', '&:hover': { backgroundColor: '#0054FF'}}}>
                   메인 페이지로 돌아가기
                 </Button>
                 <Button variant="contained" onClick={() => handlePostUpdateClick()}
-                  sx={{ backgroundColor: '#BD24A9', color: 'white', '&:hover': { backgroundColor: '#990085' }}}>
+                  sx={{ backgroundColor: '#3AAE3E', color: 'white', marginRight: '8px', '&:hover': { backgroundColor: '#309533' }}}>
                   게시물 수정
+                </Button>
+                <Button variant="contained" onClick={() => handlePostDeleteClick()}
+                  sx={{ backgroundColor: '#BD24A9', color: 'white', '&:hover': { backgroundColor: '#990085' }}}>
+                  게시물 삭제
                 </Button>
               </CardContent>
             </Card>

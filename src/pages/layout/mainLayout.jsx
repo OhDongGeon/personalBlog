@@ -11,6 +11,7 @@ function MainLayout({ children }) {
     const [appBarHeight, setAppBarHeight] = useState(0);
     const scrollTrigger = useScrollTrigger();
 
+    // 스크롤 움직일시 메뉴바
     const scrollTimeout = {
         enter: 1000,
         exit: 1000
@@ -25,13 +26,25 @@ function MainLayout({ children }) {
     };
 
     useEffect(() => {
-        // AppBar 요소를 선택합니다.
-        const appBar = document.querySelector('.MuiAppBar-root');
-        if (appBar) {
-          // AppBar의 높이를 상태에 저장합니다.
-          setAppBarHeight(appBar.clientHeight);
-        }
-    }, []); // 의존성 배열이 빈 배열이므로, 컴포넌트 마운트 시에만 실행됩니다.
+        // AppBar 높이를 설정하는 함수
+        const setAppBarHeightFunc = () => {
+          const appBar = document.querySelector('.MuiAppBar-root');
+          if (appBar) {
+            setAppBarHeight(appBar.clientHeight);
+          }
+        };
+      
+        // 이벤트 리스너를 등록합니다.
+        window.addEventListener('resize', setAppBarHeightFunc);
+      
+        // 처음 마운트될 때 높이 설정
+        setAppBarHeightFunc();
+      
+        // 컴포넌트가 언마운트될 때 이벤트 리스너를 정리합니다.
+        return () => {
+          window.removeEventListener('resize', setAppBarHeightFunc);
+        };
+      }, []);
     
 
     return (
