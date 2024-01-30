@@ -21,6 +21,10 @@ function MainLayout({ children }) {
         router.push('/board/create');
     };
 
+    const handleBestPageClick = () => {
+        router.push(`/bestPost`);
+    };
+
     const handleMainPageClick = () => {
         router.push(`/..`);
     };
@@ -60,7 +64,7 @@ function MainLayout({ children }) {
                             </Grid>
                             <Grid item xs={12} sm={true} container justifyContent="center">
                                 <Button color="inherit" onClick={() => handleMainPageClick()}>홈</Button>
-                                <Button color="inherit">울룰루</Button>
+                                <Button color="inherit" onClick={() => handleBestPageClick()}>베스트 게시물</Button>
                                 <Button color="inherit">쿼카</Button>
                                 <Button color="inherit">캥거루</Button>
                             </Grid>

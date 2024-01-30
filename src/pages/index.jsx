@@ -42,12 +42,10 @@ function BlogHome() {
     <div>
       <MainLayout>
         <Container>
-          <Grid item xs={12} sm={6} md={4} lg={3} sx={{ marginY: 2 }}>
+          <Grid item xs={12} sm={6} md={4} lg={3} sx={{ marginBottom: 1 }}>
             <FormControl size="small" sx={{ minWidth: 120, width: '100%' }}>
               <InputLabel id="sortSelectLabel"/>
-                <Select labelId="sortSelectLabel" value={ JSON.stringify(getOrderBy) } onChange={handleSortChange}
-                // labelId="sort-select-label" id="sort-select" value={sortKey} label="정렬" onChange={handleSortChange}
-                >
+                <Select labelId="sortSelectLabel" value={ JSON.stringify(getOrderBy) } onChange={handleSortChange}>
                   <MenuItem value={JSON.stringify({ "view_count": "desc" })}>조회순</MenuItem>
                   <MenuItem value={JSON.stringify({ "created_at": "asc" })}>업로드 일자 오름차순</MenuItem>
                   <MenuItem value={JSON.stringify({ "created_at": "desc" })}>업로드 일자 내림차순</MenuItem>
@@ -70,7 +68,7 @@ function BlogHome() {
                     />
                     <Box flexGrow={1} display="flex" flexDirection="column">
                       <CardContent sx={{ flexGrow: 1 }}>
-                        <Typography gutterBottom variant="h5" component="h2">{post.title}</Typography>
+                        <Typography gutterBottom variant="h7" component="h2">{post.title}</Typography>
                         <Typography variant="body2" color="textSecondary" component="p">{post.content}</Typography>
                       </CardContent>
                       <Box p={1} display="flex" justifyContent="flex-start" flexWrap="wrap">
